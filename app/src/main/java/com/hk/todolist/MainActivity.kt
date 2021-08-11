@@ -2,12 +2,17 @@ package com.hk.todolist
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.activity.viewModels
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var todoAdapter: TodoAdapter
+    private lateinit var viewModel: TaskViewModel
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,5 +37,14 @@ class MainActivity : AppCompatActivity() {
         btnDeleteAll.setOnClickListener{
             todoAdapter.deleteAll()
         }
+
+
+
+        viewModel=ViewModelProvider(this,
+        ViewModelProvider.AndroidViewModelFactory.getInstance(application)).get(TaskViewModel::class.java)
+        viewModel.allTasks.observe(this, Observer {
+
+        })
+
     }
 }
