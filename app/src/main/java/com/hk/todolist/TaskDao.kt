@@ -10,7 +10,12 @@ interface TaskDao {
         @Delete
         suspend fun delete(task: TasksEntity)
 
+        @Update
+        suspend fun update(IsChecked: TasksEntity)
+
         @Query("SELECT * FROM task_table ORDER BY id ASC")
         fun getAllTasks(): LiveData<List<TasksEntity>>
+
+
 
 }

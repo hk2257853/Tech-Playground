@@ -23,28 +23,37 @@ class MainActivity : AppCompatActivity() {
         rvTodoItems.layoutManager = LinearLayoutManager(this)
 
         btnAddTodo.setOnClickListener {
-            val todoTitle = etTodoTitle.text.toString()
-            if(todoTitle.isNotEmpty()) {
-                val todo = Todo(todoTitle)
-                todoAdapter.addTodo(todo)
+            val todoTask = etTodoTitle.text.toString()
+            if(todoTask.isNotEmpty()) {
+                viewModel.insertNote(TasksEntity(todoTask, true))
                 etTodoTitle.text.clear()
             }
         }
         btnDeleteDoneTodos.setOnClickListener {
-            todoAdapter.deleteDoneTodos()
+           //viewModel.delete(TasksEntity(task), TasksEntity(isChecked))
         }
 
-        btnDeleteAll.setOnClickListener{
-            todoAdapter.deleteAll()
-        }
+        /*btnDeleteAll.setOnClickListener{
+        }*/
 
 
 
         viewModel=ViewModelProvider(this,
         ViewModelProvider.AndroidViewModelFactory.getInstance(application)).get(TaskViewModel::class.java)
         viewModel.allTasks.observe(this, Observer {
-
+            list->list?.let {
+            todoAdapter.updateList(it)
+        }
         })
 
     }
 }
+
+//TODO:
+/*
+* update each time there's a change in tick/check.
+*
+* delete a particular row from db(means delete all those rows for which isChecked is true).
+* functionality to delete all data from database
+*
+* */

@@ -6,6 +6,7 @@ import androidx.room.PrimaryKey
 
 
 @Entity(tableName = "task_table")
-class TasksEntity(@ColumnInfo(name = "task") val task: String) {
+data class TasksEntity(@ColumnInfo(name = "task") val task: String,
+                       @ColumnInfo(name = "isChecked") var isChecked: Boolean) {
     @PrimaryKey(autoGenerate = true) var id =0
 }

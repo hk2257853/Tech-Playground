@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.item_todo.view.*
 
 class TodoAdapter(
-    private val todos: MutableList<Todo>
+    private val todos: MutableList<TasksEntity>
 ) : RecyclerView.Adapter<TodoAdapter.TodoViewHolder>() {
 
     class TodoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
@@ -24,37 +24,14 @@ class TodoAdapter(
         )
     }
 
-    fun addTodo(todo: Todo) {
-        todos.add(todo)
-        notifyItemInserted(todos.size - 1)
-    }
-
-    fun deleteDoneTodos() {
-        todos.removeAll { todo ->
-            todo.isChecked
-        }
-        notifyDataSetChanged()
-    }
-
-    fun deleteAll() {
-        todos.clear()
-        notifyDataSetChanged()
-    }
-
-    private fun toggleStrikeThrough(tvTodoTitle: TextView, isChecked: Boolean) {
-        if(isChecked) {
-            tvTodoTitle.paintFlags = tvTodoTitle.paintFlags or STRIKE_THRU_TEXT_FLAG
-        } else {
-            tvTodoTitle.paintFlags = tvTodoTitle.paintFlags and STRIKE_THRU_TEXT_FLAG.inv()
-        }
-    }
-
     override fun onBindViewHolder(holder: TodoViewHolder, position: Int) {
         val curTodo = todos[position]
         holder.itemView.apply {
-            tvTodoTitle.text = curTodo.title
+            tvTodoTitle.text = curTodo.task
             cbDone.isChecked = curTodo.isChecked
+
             toggleStrikeThrough(tvTodoTitle, curTodo.isChecked)
+
             cbDone.setOnCheckedChangeListener { _, isChecked ->
                 toggleStrikeThrough(tvTodoTitle, isChecked)
                 curTodo.isChecked = !curTodo.isChecked
@@ -64,6 +41,29 @@ class TodoAdapter(
 
     override fun getItemCount(): Int {
         return todos.size
+    }
+
+    /*fun deleteDoneTodos() {
+        todos.removeAll { todo ->
+            todo.isChecked
+        }
+        notifyDataSetChanged()
+    }*/
+
+    private fun toggleStrikeThrough(tvTodoTitle: TextView, isChecked: Boolean) {
+        if(isChecked) {
+            tvTodoTitle.paintFlags = tvTodoTitle.paintFlags or STRIKE_THRU_TEXT_FLAG
+        } else {
+            tvTodoTitle.paintFlags = tvTodoTitle.paintFlags and STRIKE_THRU_TEXT_FLAG.inv()
+        }
+    }
+
+    fun updateList(newList: List<TasksEntity>)
+    {
+        todos.clear()
+        todos.addAll(newList)
+
+        notifyDataSetChanged()
     }
 }
 
