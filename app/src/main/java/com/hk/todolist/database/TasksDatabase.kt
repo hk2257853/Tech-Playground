@@ -1,4 +1,4 @@
-package com.hk.todolist
+package com.hk.todolist.database
 
 import android.content.Context
 import androidx.room.Database

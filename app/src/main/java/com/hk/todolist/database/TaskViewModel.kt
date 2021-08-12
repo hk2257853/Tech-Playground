@@ -1,4 +1,4 @@
-package com.hk.todolist
+package com.hk.todolist.database
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -10,11 +10,11 @@ import kotlinx.coroutines.launch
 class TaskViewModel(application: Application): AndroidViewModel(application) {
 
     val allTasks: LiveData<List<TasksEntity>>
-    val repository:  TaskRepository
+    val repository: TaskRepository
 
     init {
-        val dao=TaskDatabase.getDatabase(application).getTaskDao()
-        repository=TaskRepository(dao)
+        val dao= TaskDatabase.getDatabase(application).getTaskDao()
+        repository= TaskRepository(dao)
         allTasks=repository.allTasks
     }
 
@@ -26,6 +26,11 @@ class TaskViewModel(application: Application): AndroidViewModel(application) {
     fun delete(task: TasksEntity)=viewModelScope.launch(Dispatchers.IO) {
         repository.delete(task)
     }
+
+    fun deleteTable()=viewModelScope.launch {
+        repository.deleteTable()
+    }
+
 
 
 }

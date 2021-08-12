@@ -2,13 +2,14 @@ package com.hk.todolist
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.activity.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.hk.todolist.database.TaskViewModel
+import com.hk.todolist.database.TasksEntity
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ITodoAdapter {
 
     private lateinit var todoAdapter: TodoAdapter
     private lateinit var viewModel: TaskViewModel
@@ -17,26 +18,10 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        todoAdapter = TodoAdapter(mutableListOf())
 
-        rvTodoItems.adapter = todoAdapter
-        rvTodoItems.layoutManager = LinearLayoutManager(this)
-
-        btnAddTodo.setOnClickListener {
-            val todoTask = etTodoTitle.text.toString()
-            if(todoTask.isNotEmpty()) {
-                viewModel.insertNote(TasksEntity(todoTask, true))
-                etTodoTitle.text.clear()
-            }
-        }
-        btnDeleteDoneTodos.setOnClickListener {
-           //viewModel.delete(TasksEntity(task), TasksEntity(isChecked))
-        }
-
-        /*btnDeleteAll.setOnClickListener{
-        }*/
-
-
+        rvTodotasks.layoutManager = LinearLayoutManager(this)
+        val todoAdapter = TodoAdapter(this, this)
+        rvTodotasks.adapter = todoAdapter
 
         viewModel=ViewModelProvider(this,
         ViewModelProvider.AndroidViewModelFactory.getInstance(application)).get(TaskViewModel::class.java)
@@ -46,14 +31,20 @@ class MainActivity : AppCompatActivity() {
         }
         })
 
+        btnAddTodo.setOnClickListener {
+            val todoTask = etTodoTitle.text.toString()
+            if(todoTask.isNotEmpty()) {
+                viewModel.insertNote(TasksEntity(todoTask))
+                etTodoTitle.text.clear()
+            }
+        }
+
+        btnDeleteAll.setOnClickListener {
+            viewModel.deleteTable()
+        }
+    }
+
+    override fun onItemClick(task: TasksEntity) {
+        viewModel.delete(task)
     }
 }
-
-//TODO:
-/*
-* update each time there's a change in tick/check.
-*
-* delete a particular row from db(means delete all those rows for which isChecked is true).
-* functionality to delete all data from database
-*
-* */

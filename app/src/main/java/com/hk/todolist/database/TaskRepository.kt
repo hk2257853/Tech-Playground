@@ -1,6 +1,5 @@
-package com.hk.todolist
+package com.hk.todolist.database
 
-import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 
 
@@ -14,5 +13,9 @@ class TaskRepository(private val taskDao: TaskDao) {
 
     suspend fun delete(task: TasksEntity){
     taskDao.delete(task)
+    }
+
+    suspend fun deleteTable(){
+        taskDao.ClearTable()
     }
 }

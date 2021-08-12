@@ -1,74 +1,54 @@
 package com.hk.todolist
 
-import android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.item_todo.view.*
+import com.hk.todolist.database.TasksEntity
 
-class TodoAdapter(
-    private val todos: MutableList<TasksEntity>
-) : RecyclerView.Adapter<TodoAdapter.TodoViewHolder>() {
+class TodoAdapter(private  val context: Context, private  val listener: ITodoAdapter): RecyclerView.Adapter<TodoAdapter.TodoViewHOlder>(){
+    private val allTasks= mutableListOf<TasksEntity>()
 
-    class TodoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TodoViewHolder {
-        return TodoViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.item_todo,
-                parent,
-                false
-            )
-        )
+    inner class TodoViewHOlder(itemView: View):  RecyclerView.ViewHolder(itemView){
+        val textView=itemView.findViewById<TextView>(R.id.tvTodoTask)
+        val deleteButton=itemView.findViewById<ImageView>(R.id.btnDeleteDone)
     }
 
-    override fun onBindViewHolder(holder: TodoViewHolder, position: Int) {
-        val curTodo = todos[position]
-        holder.itemView.apply {
-            tvTodoTitle.text = curTodo.task
-            cbDone.isChecked = curTodo.isChecked
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TodoViewHOlder {
+       val viewHolder = TodoViewHOlder(LayoutInflater.from(context).inflate(R.layout.item_todo, parent, false))
+       viewHolder.deleteButton.setOnClickListener {
+           listener.onItemClick(allTasks[viewHolder.adapterPosition])
+       }
+        return viewHolder
+    }
 
-            toggleStrikeThrough(tvTodoTitle, curTodo.isChecked)
-
-            cbDone.setOnCheckedChangeListener { _, isChecked ->
-                toggleStrikeThrough(tvTodoTitle, isChecked)
-                curTodo.isChecked = !curTodo.isChecked
-            }
+    override fun onBindViewHolder(holder: TodoViewHOlder, position: Int) {
+        val currentTask=allTasks[position]
+        holder.apply {
+            textView.text=currentTask.task
         }
+
     }
 
     override fun getItemCount(): Int {
-        return todos.size
+        return allTasks.size
     }
 
-    /*fun deleteDoneTodos() {
-        todos.removeAll { todo ->
-            todo.isChecked
-        }
-        notifyDataSetChanged()
-    }*/
-
-    private fun toggleStrikeThrough(tvTodoTitle: TextView, isChecked: Boolean) {
-        if(isChecked) {
-            tvTodoTitle.paintFlags = tvTodoTitle.paintFlags or STRIKE_THRU_TEXT_FLAG
-        } else {
-            tvTodoTitle.paintFlags = tvTodoTitle.paintFlags and STRIKE_THRU_TEXT_FLAG.inv()
-        }
-    }
-
-    fun updateList(newList: List<TasksEntity>)
+    fun updateList(newTasks: List<TasksEntity>)
     {
-        todos.clear()
-        todos.addAll(newList)
+        allTasks.clear()
+        allTasks.addAll(newTasks)
 
         notifyDataSetChanged()
     }
 }
 
-
-
+interface ITodoAdapter{
+    fun onItemClick(task: TasksEntity)
+}
 
 
 

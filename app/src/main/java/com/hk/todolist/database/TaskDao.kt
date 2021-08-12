@@ -1,4 +1,4 @@
-package com.hk.todolist
+package com.hk.todolist.database
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
@@ -10,12 +10,11 @@ interface TaskDao {
         @Delete
         suspend fun delete(task: TasksEntity)
 
-        @Update
-        suspend fun update(IsChecked: TasksEntity)
+        @Query("DELETE FROM task_table")
+        suspend fun ClearTable()
 
         @Query("SELECT * FROM task_table ORDER BY id ASC")
         fun getAllTasks(): LiveData<List<TasksEntity>>
-
 
 
 }
