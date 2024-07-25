@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp-deployment
+  labels:
+    app: webapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webapp
+  template:
+    metadata:
+      labels:
+        app: webapp
+    spec:
+      containers:
+      - name: webappdb
+        image: nanajanashia/k8s-demo-app:v1.0 # taking his image from docker hub
+        ports:
+        - containerPort: 3000 # as the nodejs is set to listen on port 3000
+
+        # template - configuration for pod has its own metadata and spec
+        # containers - which image and ports to use
+        # labels are just additional identifiers
+        # selector - how to select the pods
+        # matchLabels - match the labels. they are key value pairs       
+
+        # webapp is expecting the following environment variables
+        env: 
+        - name: USER_NAME
+          valueFrom:
+            secretKeyRef:
+              name: mongo-secret
+              key: mongo-user
+        - name: USER_PWD
+          valueFrom:
+            secretKeyRef:
+              name: mongo-secret
+              key: mongo-password    
+        - name: DB_URL
+          valueFrom:
+            configMapKeyRef:
+              name: mongo-config
+              key: mongo-url
+
+--- # means end of file    
+# service
+apiVersion: v1
+kind: Service
+metadata:
+  name: webapp-service
+spec:
+  type: NodePort
+  selector:
+    app: webapp # this is the label of the pod
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000 # this is the port of the container
+      nodePort: 30100 # expose the service to the outside world, range is 30000-32767
